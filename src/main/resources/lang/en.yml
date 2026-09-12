@@ -1,0 +1,3 @@
+created: "Created hologram {id}."
+deleted: "Deleted hologram {id}."
+unknown: "Unknown hologram: {id}"

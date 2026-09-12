@@ -1,0 +1,35 @@
+name: PurrHolograms
+version: '0.1.0-alpha'
+main: gay.nyaa.purrholograms.PurrHologramsPlugin
+api-version: '1.21'
+description: Hologram framework with MiniMessage, PurrItems displays and in-game editor
+prefix: PurrHolograms
+author: flakesonnix
+website: https://github.com/flakesonnix/PurrHolograms
+
+dependencies:
+  server:
+    PurrCore:
+      load: BEFORE
+      required: true
+      join-classpath: true
+    PurrItems:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+permissions:
+  purrholograms.use:
+    description: Use hologram commands
+    default: op
+  purrholograms.admin:
+    description: Delete and edit all holograms
+    default: op
+
+commands:
+  hologram:
+    description: Manage holograms
+    usage: /hologram <create|delete|list|tp|addline|additem|removeline|movehere|edit>
+    aliases: [holo, ph]
+    permission: purrholograms.use
+    permission-message: You don't have permission!

@@ -1,0 +1,7 @@
+# PurrHolograms config (alpha)
+defaults:
+  view-distance: 32
+  billboard: center
+  see-through: false
+editor:
+  live-preview: true
