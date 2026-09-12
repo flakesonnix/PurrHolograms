@@ -25,6 +25,9 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.26.3")
     testImplementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     testImplementation(fileTree("../PurrCore/build/libs") { include("*.jar") })
+    testImplementation(fileTree("../PurrItems/build/libs") { include("*.jar") })
+    // PurrItemsAPI signatures reference PurrSkills types (e.g. PlayerStats)
+    testImplementation(fileTree("../PurrSkills/build/libs") { include("*.jar") })
 }
 
 java {

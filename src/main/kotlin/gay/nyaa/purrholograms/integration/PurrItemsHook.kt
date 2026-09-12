@@ -1,35 +1,40 @@
 package gay.nyaa.purrholograms.integration
 
+import gay.nyaa.purritems.PurrItemsPlugin
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.Plugin
 import java.util.logging.Logger
 
 /**
- * Soft integration with PurrItems. Uses reflection-free safe cast;
- * falls back to null so DisplayRenderer uses vanilla materials.
+ * Soft integration with PurrItems via its public API.
+ * Falls back to null so DisplayRenderer uses vanilla materials.
+ *
+ * NOTE: PurrItems exposes `getAPI()` (capital I). A previous version used
+ * reflection against `getApi()` which never existed, so item lines silently
+ * never resolved. Do NOT go back to reflection here.
  */
-class PurrItemsHook(private val logger: Logger) {
-    private var available = false
-
+class PurrItemsHook(
+    private val logger: Logger,
+    private val pluginLookup: () -> Plugin? = { Bukkit.getPluginManager().getPlugin("PurrItems") },
+) {
     fun refresh() {
-        val plugin = Bukkit.getPluginManager().getPlugin("PurrItems")
-        available = plugin != null && plugin.isEnabled
-        if (available) logger.info("PurrItems integration enabled")
+        if (isAvailable()) logger.info("PurrItems integration enabled")
     }
 
     fun isAvailable(): Boolean {
-        val plugin = Bukkit.getPluginManager().getPlugin("PurrItems")
+        val plugin = pluginLookup()
         return plugin != null && plugin.isEnabled
     }
 
-    fun createItem(itemId: String, amount: Int): ItemStack? {
-        if (!isAvailable()) return null
+    fun createItem(
+        itemId: String,
+        amount: Int,
+    ): ItemStack? {
+        val plugin = pluginLookup() as? PurrItemsPlugin ?: return null
+        if (!plugin.isEnabled) return null
         return try {
-            val plugin = Bukkit.getPluginManager().getPlugin("PurrItems") ?: return null
-            val api = plugin.javaClass.getMethod("getApi").invoke(plugin)
-            val stack = api.javaClass.getMethod("createItem", String::class.java, Int::class.javaPrimitiveType)
-                .invoke(api, itemId, amount) as? ItemStack
-            stack
+            plugin.api.createItem(itemId, amount)
         } catch (e: Exception) {
             logger.fine("PurrItems lookup failed for $itemId: ${e.message}")
             null
